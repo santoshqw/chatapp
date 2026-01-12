@@ -4,7 +4,7 @@ const app =express();
 const connectDB =require("./config/connectDB");
 
 const PORT =process.env.PORT;
-
+//branch check
 connectDB();
 
 app.listen(PORT,(req,res)=>{
