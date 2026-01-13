@@ -32,7 +32,6 @@ passport.use(
 
         done(null, { user, token });
       } catch (err) {
-        console.error("Passport GoogleStrategy Error:", err);
         done(err, null);
       }
     }
