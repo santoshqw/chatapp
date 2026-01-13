@@ -1,37 +1,48 @@
 require("dotenv").config();
 const express = require("express");
-const app = express();
 const cookieParser = require("cookie-parser");
-const connectDB = require("./config/connectDB");
-const passport = require("passport");
-const authRoutes = require("./routes/auth");
-const authenticateJWT = require("./middleware/auth");
 const cors = require("cors");
-const PORT =process.env.PORT;
+const passport = require("passport");
+const connectDB = require("./config/connectDB");
 
-// Connect to DB
+// Routes
+const authRoutes = require("./routes/auth");
+const messageRouter = require("./routes/message.router");
+const authenticateJWT = require("./middleware/auth");
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Connect DB
 connectDB();
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
+
+// Middlewares
+app.use(express.json());
 app.use(cookieParser());
-require("./config/passport");
+app.use(cors({
+  origin: "http://localhost:5173", 
+  credentials: true,
+}));
 
 // Initialize Passport
+require("./config/passport"); // Passport GoogleStrategy
 app.use(passport.initialize());
 
 // Routes
 app.use("/", authRoutes);
+app.use("/api/user", messageRouter);
 
-// Test protected route
+// Protected test route
 app.get("/api/protected", authenticateJWT, (req, res) => {
   res.json({ message: "You are authorized!", user: req.user });
 });
 
-//server run on 3000 port
+// Root route
+app.get("/", (req, res) => {
+  res.send({ message: "Hello from backend" });
+});
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is running at port: ${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
